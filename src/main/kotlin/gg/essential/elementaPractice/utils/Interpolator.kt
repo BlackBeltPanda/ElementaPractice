@@ -1,21 +1,24 @@
 package gg.essential.elementaPractice.utils
 
-import gg.essential.elementa.UIComponent
-import gg.essential.elementa.components.UIPoint
-import gg.essential.elementa.dsl.childOf
+import gg.essential.elementaPractice.gui.components.Coordinates
 
 class Interpolator {
 
-    fun interpolate(points: MutableList<UIPoint>, whiteboard: UIComponent): MutableList<UIPoint> {
+    /**
+     * Interpolate the points, generating a smooth spline
+     * @param points: MutableList<Coordinates> - Coordinates (Pair<Number, Number>) to interpolate
+     * @return MutableList<Coordinates> - List of interpolated coordinates
+     */
+    fun interpolate(points: MutableList<Coordinates>): MutableList<Coordinates> {
         val start = points[1]
         val end = points[points.size - 2]
 
         points.add(0, start)
         points.add(end)
 
-        val result = mutableListOf<UIPoint>()
+        val result = mutableListOf<Coordinates>()
         for (i in 0 until points.size - 3) {
-            val intPoints = interpolate(points, i, whiteboard)
+            val intPoints = interpolate(points, i)
             if (result.size > 0) {
                 intPoints.removeAt(0)
             }
@@ -25,14 +28,14 @@ class Interpolator {
         return result
     }
 
-    private fun interpolate(points: MutableList<UIPoint>, index: Int, whiteboard: UIComponent): MutableList<UIPoint> {
-        val result = mutableListOf<UIPoint>()
+    private fun interpolate(points: MutableList<Coordinates>, index: Int): MutableList<Coordinates> {
+        val result = mutableListOf<Coordinates>()
         val x = Array(4) { Double.NaN }
         val y = Array(4) { Double.NaN }
         val time = Array(4) { Double.NaN }
         for (i in 0 until 4) {
-            x[i] = (points[index + i].absoluteX - whiteboard.getLeft()).toDouble()
-            y[i] = (points[index + i].absoluteY - whiteboard.getTop()).toDouble()
+            x[i] = points[index + i].first.toDouble()
+            y[i] = points[index + i].second.toDouble()
             time[i] = i.toDouble()
         }
 
@@ -43,7 +46,7 @@ class Interpolator {
         for (i in 1 until segments) {
             val xi = interpolate(x, time, tstart + (i * (tend - tstart)) / segments)
             val yi = interpolate(y, time, tstart + (i * (tend - tstart)) / segments)
-            result.add(UIPoint(xi, yi) childOf whiteboard)
+            result.add(Coordinates(xi, yi))
         }
         result.add(points[index + 2])
         return result

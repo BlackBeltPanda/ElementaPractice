@@ -1,19 +1,30 @@
 package gg.essential.elementaPractice.utils
 
-import gg.essential.elementa.components.UIPoint
+import gg.essential.elementaPractice.gui.components.Coordinates
 import kotlin.math.hypot
 
 class Simplifier {
 
-    private fun perpendicularDistance(pt: UIPoint, lineStart: UIPoint, lineEnd: UIPoint): Float {
-        var dx = lineEnd.relativeX - lineStart.relativeX
-        var dy = lineEnd.relativeY - lineStart.relativeY
+    /**
+     * Simplify the points, removing excess points to create a simpler spline
+     * @param points: MutableList<Coordinates> - Coordinates (Pair<Number, Number>) to simplify
+     * @return MutableList<Coordinates> - List of simplified coordinates
+     */
+    fun simplify(points: List<Coordinates>): MutableList<Coordinates> {
+        val pointListOut = mutableListOf<Coordinates>()
+        ramerDouglasPeucker(points, 0.7, pointListOut)
+        return pointListOut
+    }
+
+    private fun perpendicularDistance(pt: Coordinates, lineStart: Coordinates, lineEnd: Coordinates): Float {
+        var dx = lineEnd.first.toFloat() - lineStart.first.toFloat()
+        var dy = lineEnd.second.toFloat() - lineStart.second.toFloat()
 
         // Normalize
         val mag = hypot(dx, dy)
         if (mag > 0.0) { dx /= mag; dy /= mag }
-        val pvx = pt.relativeX - lineStart.relativeX
-        val pvy = pt.relativeY - lineStart.relativeY
+        val pvx = pt.first.toFloat() - lineStart.first.toFloat()
+        val pvy = pt.second.toFloat() - lineStart.second.toFloat()
 
         // Get dot product (project pv onto normalized direction)
         val pvdot = dx * pvx + dy * pvy
@@ -25,7 +36,7 @@ class Simplifier {
         return hypot(ax, ay)
     }
 
-    private fun ramerDouglasPeucker(pointList: List<UIPoint>, epsilon: Double, out: MutableList<UIPoint>) {
+    private fun ramerDouglasPeucker(pointList: List<Coordinates>, epsilon: Double, out: MutableList<Coordinates>) {
         if (pointList.size < 2) throw IllegalArgumentException("Not enough points to simplify")
 
         // Find the point with the maximum distance from line between start and end
@@ -39,8 +50,8 @@ class Simplifier {
 
         // If max distance is greater than epsilon, recursively simplify
         if (dmax > epsilon) {
-            val recResults1 = mutableListOf<UIPoint>()
-            val recResults2 = mutableListOf<UIPoint>()
+            val recResults1 = mutableListOf<Coordinates>()
+            val recResults2 = mutableListOf<Coordinates>()
             val firstLine = pointList.take(index + 1)
             val lastLine  = pointList.drop(index)
             ramerDouglasPeucker(firstLine, epsilon, recResults1)
@@ -57,12 +68,6 @@ class Simplifier {
             out.add(pointList.first())
             out.add(pointList.last())
         }
-    }
-
-    fun simplify(points: List<UIPoint>): List<UIPoint> {
-        val pointListOut = mutableListOf<UIPoint>()
-        ramerDouglasPeucker(points, 0.7, pointListOut)
-        return pointListOut
     }
 
 }

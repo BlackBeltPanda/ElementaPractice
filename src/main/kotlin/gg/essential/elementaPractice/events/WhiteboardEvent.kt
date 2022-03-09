@@ -1,6 +1,6 @@
 package gg.essential.elementaPractice.events
 
-import gg.essential.elementaPractice.WhiteboardGUI
+import gg.essential.elementaPractice.gui.WhiteboardGUI
 import gg.essential.universal.UMinecraft
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent
 import net.minecraftforge.fml.common.gameevent.TickEvent
