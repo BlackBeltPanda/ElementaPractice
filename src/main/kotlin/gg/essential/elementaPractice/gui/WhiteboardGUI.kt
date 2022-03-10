@@ -11,6 +11,7 @@ import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
 import gg.essential.elementaPractice.WhiteboardPalette
 import gg.essential.elementaPractice.events.WhiteboardEvent
+import gg.essential.elementaPractice.gui.components.ButtonComponent
 import gg.essential.elementaPractice.gui.components.ColorToolComponent
 import gg.essential.elementaPractice.gui.components.SliderComponent
 import gg.essential.elementaPractice.gui.components.WhiteboardComponent
@@ -28,33 +29,13 @@ public class WhiteboardGUI : WindowScreen(ElementaVersion.V1) {
         // TODO Save/Load buttons?
 
         // Button to close the whiteboard
-        val closeButton = UIBlock(WhiteboardPalette.BUTTON_BACKGROUND).constrain {
+        ButtonComponent("X").constrain {
             x = 2.percent()
             y = 2.percent()
-            width = ChildBasedMaxSizeConstraint() + 2.pixels()
-            height = ChildBasedMaxSizeConstraint() + 2.pixels()
         }.onMouseClick {
             // Close the whiteboard
             toggle()
-        }.onMouseEnter {
-            // Change color on mouse hover
-            this.animate {
-                setColorAnimation(Animations.OUT_EXP, 0.5f, WhiteboardPalette.BUTTON_HIGHLIGHT.toConstraint())
-            }
-        }.onMouseLeave {
-            // Change color back to original when not hovering
-            this.animate {
-                setColorAnimation(Animations.OUT_EXP, 0.5f, WhiteboardPalette.BUTTON_BACKGROUND.toConstraint())
-            }
         } childOf window
-
-        // Text for close button
-        UIText("X", shadow = false).constrain {
-            x = CenterConstraint()
-            y = CenterConstraint()
-            textScale = 1.pixels()
-            color = WhiteboardPalette.BUTTON_TEXT.toConstraint()
-        } childOf closeButton
 
         val whiteboard = WhiteboardComponent().constrain {
             x = 5.percent()
@@ -115,32 +96,12 @@ public class WhiteboardGUI : WindowScreen(ElementaVersion.V1) {
         }
 
         // Clear Whiteboard button
-        val clearButton = UIBlock(WhiteboardPalette.BUTTON_BACKGROUND).constrain {
+        ButtonComponent("Clear Whiteboard").constrain {
             x = 74.percent()
             y = 89.percent()
-            width = ChildBasedMaxSizeConstraint() + 2.pixels()
-            height = ChildBasedMaxSizeConstraint() + 2.pixels()
         }.onMouseClick {
             whiteboard.drawArea.clear()
-        }.onMouseEnter {
-            // Change color on mouse hover
-            this.animate {
-                setColorAnimation(Animations.OUT_EXP, 0.5f, WhiteboardPalette.BUTTON_HIGHLIGHT.toConstraint())
-            }
-        }.onMouseLeave {
-            // Change color back to original when not hovering
-            this.animate {
-                setColorAnimation(Animations.OUT_EXP, 0.5f, WhiteboardPalette.BUTTON_BACKGROUND.toConstraint())
-            }
         } childOf window
-
-        // Clear Whiteboard Label
-        UIText("Clear Whiteboard", shadow = false).constrain {
-            x = CenterConstraint()
-            y = CenterConstraint()
-            textScale = 1.pixels()
-            color = WhiteboardPalette.BUTTON_TEXT.toConstraint()
-        } childOf clearButton
 
         // For some reason escape doesn't close the GUI, perhaps one of the components is preventing the key propagation or holding on to window focus?
         // Not sure, so here's a workaround
