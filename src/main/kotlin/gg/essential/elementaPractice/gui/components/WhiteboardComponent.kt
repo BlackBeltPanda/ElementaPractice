@@ -29,9 +29,9 @@ public class WhiteboardComponent : UIComponent() {
             color = WhiteboardPalette.WHITEBOARD_BACKGROUND.toConstraint()
         } childOf border
 
-        drawArea.onMouseClick {
+        drawArea.onMouseClick { event ->
             // Generate a new line with color after clicking
-            drawArea.newLine()
+            drawArea.newLine(event.absoluteX, event.absoluteY)
         }.onMouseDrag { mouseX, mouseY, mouseButton ->
             // Only draw on left click
             if (mouseButton != 0) return@onMouseDrag

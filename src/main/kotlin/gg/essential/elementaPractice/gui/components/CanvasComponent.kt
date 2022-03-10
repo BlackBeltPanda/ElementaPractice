@@ -1,5 +1,6 @@
 package gg.essential.elementaPractice.gui.components
 
+import gg.essential.elementa.components.UICircle
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementaPractice.utils.Interpolator
 import gg.essential.elementaPractice.utils.Simplifier
@@ -30,15 +31,18 @@ public class CanvasComponent : UIRoundedRectangle(8f) {
         if (oldHeight == 0f) oldHeight = this@CanvasComponent.getHeight()
 
         for (line in lines) {
-            if (line.coordinates.size > 1) {
+            if (line.coordinates.size == 1) {
+                line.coordinates[0].draw(matrixStack, line.width, line.color)
+            }
+            else if (line.coordinates.size > 1) {
                 line.draw(matrixStack, relatePoints(line))
             }
         }
     }
 
     // Update Line coordinates based on screen size, component location, and smoothing
-    private fun relatePoints(line: Line): List<Coordinates> {
-        val pointPairs = mutableListOf<Coordinates>()
+    private fun relatePoints(line: Line): List<Coordinate> {
+        val pointPairs = mutableListOf<Coordinate>()
 
         for (coord in line.coordinates) {
             // If component size changed, alter points based on their ratio to the original size
@@ -48,7 +52,7 @@ public class CanvasComponent : UIRoundedRectangle(8f) {
                 if (this@CanvasComponent.getHeight() == oldHeight) coord.second.toFloat() else (coord.second.toFloat() / oldHeight) * this@CanvasComponent.getHeight()
 
             // Make points relative by adding component top-left coords
-            pointPairs.add(Coordinates(x, y))
+            pointPairs.add(Coordinate(x, y))
         }
 
         // Smooth the coordinates
@@ -60,7 +64,7 @@ public class CanvasComponent : UIRoundedRectangle(8f) {
     }
 
     // Draws a line from one coordinate to the next from a list of coordinates
-    private fun Line.draw(matrixStack: UMatrixStack, coords: List<Coordinates>) {
+    private fun Line.draw(matrixStack: UMatrixStack, coords: List<Coordinate>) {
         val worldRenderer = UGraphics.getFromTessellator()
         worldRenderer.beginWithDefaultShader(UGraphics.DrawMode.TRIANGLE_STRIP, DefaultVertexFormats.POSITION_COLOR)
 
@@ -87,16 +91,21 @@ public class CanvasComponent : UIRoundedRectangle(8f) {
         worldRenderer.drawDirect()
     }
 
+    // Draws a simple circle at the coordinate
+    private fun Coordinate.draw(matrixStack: UMatrixStack, radius: Float, color: Color) {
+        UICircle.drawCircle(matrixStack, this.first.toFloat(), this.second.toFloat(), radius, color)
+    }
+
     // Subtracts one coordinate from another
-    private fun Coordinates.sub(other: Coordinates) =
+    private fun Coordinate.sub(other: Coordinate) =
         Pair(this.first.toDouble() - other.first.toDouble(), this.second.toDouble() - other.second.toDouble())
 
     /**
      * Add a new point to the last line
      *
-     * @param coord: [Coordinates] - The coordinate point to add to the last line
+     * @param coord: [Coordinate] - The coordinate point to add to the last line
      */
-    public fun addPoint(coord: Coordinates) {
+    public fun addPoint(coord: Coordinate) {
         // Start the first line if it hasn't been created, yet
         if (lines.isEmpty()) {
             lines.add(Line(mutableListOf(), lineColor, lineWidth, smoothing))
@@ -108,13 +117,14 @@ public class CanvasComponent : UIRoundedRectangle(8f) {
     /**
      * Start a new line with the given parameters
      */
-    public fun newLine() {
+    public fun newLine(x: Float, y: Float) {
         // Create a new line if the last line is drawn
         if (lines.isEmpty() || lines.last().coordinates.isNotEmpty()) {
-            lines.add(Line(mutableListOf(), lineColor, lineWidth, smoothing))
+            lines.add(Line(mutableListOf(Coordinate(x, y)), lineColor, lineWidth, smoothing))
         }
         // Otherwise, modify the last line's properties, so it can be reused
         else {
+            lines.last().coordinates.add(Coordinate(x, y))
             lines.last().color = lineColor
             lines.last().width = lineWidth
             lines.last().smoothing = smoothing
@@ -127,11 +137,11 @@ public class CanvasComponent : UIRoundedRectangle(8f) {
     public fun clear(): Unit = lines.clear()
 
     public data class Line(
-        val coordinates: MutableList<Coordinates>,
+        val coordinates: MutableList<Coordinate>,
         var color: Color,
         var width: Float,
         var smoothing: Int
     )
 }
 
-public typealias Coordinates = Pair<Number, Number>
+public typealias Coordinate = Pair<Number, Number>

@@ -1,8 +1,5 @@
 package gg.essential.elementaPractice
 
-import gg.essential.elementa.components.UIImage
-import gg.essential.elementa.utils.ResourceCache
-import gg.essential.elementaPractice.gui.components.ColorToolComponent
 import java.awt.Color
 
 public object WhiteboardPalette {

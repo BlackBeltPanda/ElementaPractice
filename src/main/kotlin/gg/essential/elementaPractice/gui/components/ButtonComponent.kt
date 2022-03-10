@@ -9,7 +9,7 @@ import gg.essential.elementa.constraints.animation.Animations
 import gg.essential.elementa.dsl.*
 import gg.essential.elementaPractice.WhiteboardPalette
 
-public class ButtonComponent(private val text: String, private val scale: Float = 1f) : UIComponent() {
+public class ButtonComponent(text: String, private val scale: Float = 1f) : UIComponent() {
 
     init {
         constrain {

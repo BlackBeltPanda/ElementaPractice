@@ -2,11 +2,10 @@ package gg.essential.elementaPractice.gui
 
 import gg.essential.elementa.ElementaVersion
 import gg.essential.elementa.WindowScreen
-import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIRoundedRectangle
-import gg.essential.elementa.components.UIText
-import gg.essential.elementa.constraints.*
-import gg.essential.elementa.constraints.animation.Animations
+import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.ImageAspectConstraint
+import gg.essential.elementa.constraints.SiblingConstraint
 import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
 import gg.essential.elementaPractice.WhiteboardPalette
