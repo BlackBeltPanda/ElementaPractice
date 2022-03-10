@@ -14,15 +14,16 @@ import java.awt.Color
 import java.util.concurrent.CompletableFuture
 import javax.imageio.ImageIO
 
-class ColorToolComponent constructor(
+public class ColorToolComponent constructor(
     private val colorTool: WhiteboardGUI.ColorTools
 ) : UIImage(CompletableFuture.supplyAsync {
     ImageIO.read(this::class.java.getResourceAsStream("/assets/elementapractice/${colorTool.fileName}"))
 }) {
 
-    val outline = OutlineEffect(color = Color.WHITE, width = 1f, sides = setOf(OutlineEffect.Side.Bottom))
+    public val outline: OutlineEffect =
+        OutlineEffect(color = Color.WHITE, width = 1f, sides = setOf(OutlineEffect.Side.Bottom))
 
-    fun getToolColor() = colorTool.color
+    public fun getToolColor(): Color = colorTool.color
 
     init {
 

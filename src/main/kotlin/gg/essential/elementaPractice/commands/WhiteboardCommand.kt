@@ -4,10 +4,7 @@ import gg.essential.elementaPractice.gui.WhiteboardGUI
 import net.minecraft.command.CommandBase
 import net.minecraft.command.ICommandSender
 
-/**
- * Command to open the whiteboard
- */
-class WhiteboardCommand : CommandBase() {
+public class WhiteboardCommand : CommandBase() {
     private val whiteboard = WhiteboardGUI()
 
     override fun getCommandName(): String {

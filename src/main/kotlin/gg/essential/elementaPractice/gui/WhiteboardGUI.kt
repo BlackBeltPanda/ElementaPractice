@@ -13,23 +13,26 @@ import gg.essential.elementa.dsl.*
 import gg.essential.elementa.effects.OutlineEffect
 import gg.essential.elementaPractice.events.WhiteboardEvent
 import gg.essential.elementaPractice.gui.components.ColorToolComponent
+import gg.essential.elementaPractice.gui.components.SliderComponent
 import gg.essential.elementaPractice.gui.components.WhiteboardComponent
 import gg.essential.universal.UMinecraft
 import net.minecraftforge.common.MinecraftForge
 import java.awt.Color
-import java.awt.Image
 
-class WhiteboardGUI : WindowScreen(ElementaVersion.V1) {
+public class WhiteboardGUI : WindowScreen(ElementaVersion.V1) {
 
     private val whiteboardEvent = WhiteboardEvent(this)
     private var open = false
 
     init {
 
+        // TO-DO:
+        // Save/Load buttons?
+
         // Button to close the whiteboard
         val closeButton = UIBlock(Color(207, 207, 196)).constrain {
-            x = 2.pixels()
-            y = 2.pixels()
+            x = 5.percent()
+            y = 5.percent()
             width = ChildBasedMaxSizeConstraint() + 2.pixels()
             height = ChildBasedMaxSizeConstraint() + 2.pixels()
         }.onMouseClick {
@@ -51,6 +54,7 @@ class WhiteboardGUI : WindowScreen(ElementaVersion.V1) {
         UIText("X", shadow = false).constrain {
             x = CenterConstraint()
             y = CenterConstraint()
+            textScale = 0.5.pixels()
             color = Color.BLACK.toConstraint()
         } childOf closeButton
 
@@ -75,7 +79,7 @@ class WhiteboardGUI : WindowScreen(ElementaVersion.V1) {
                     it.setWidth(30.pixels())
                     it.removeEffect<OutlineEffect>()
                 }
-                whiteboard.setColor((event.target as ColorToolComponent).getToolColor())
+                whiteboard.drawArea.lineColor = (event.target as ColorToolComponent).getToolColor()
             }
         } childOf window
 
@@ -93,12 +97,84 @@ class WhiteboardGUI : WindowScreen(ElementaVersion.V1) {
                 tool effect tool.outline
             }
         }
+
+        // Size slider
+        val sizeSlider = SliderComponent(12, 2, true).constrain {
+            x = 12.percent()
+            y = 93.percent()
+            width = 20.pixels()
+            height = 8.pixels()
+        } childOf window
+        sizeSlider.onMouseRelease {
+            whiteboard.drawArea.lineWidth = sizeSlider.getValue().toFloat()
+        }
+
+        // Size slider label
+        UIText("Marker Size", shadow = false).constrain {
+            x = CenterConstraint()
+            y = (-5).pixels()
+            textScale = 0.5.pixels()
+            color = Color.WHITE.toConstraint()
+        } childOf sizeSlider
+
+        // Smoothing slider
+        val smoothingSlider = SliderComponent(11, 5).constrain {
+            x = 20.percent()
+            y = 93.percent()
+            width = 20.pixels()
+            height = 8.pixels()
+        } childOf window
+        smoothingSlider.onMouseRelease {
+            whiteboard.drawArea.smoothing = smoothingSlider.getValue()
+        }
+
+        // Smoothing slider label
+        UIText("Smoothing", shadow = false).constrain {
+            x = CenterConstraint()
+            y = (-5).pixels()
+            textScale = 0.5.pixels()
+            color = Color.WHITE.toConstraint()
+        } childOf smoothingSlider
+
+        // Clear Whiteboard button
+        val clearButton = UIBlock(Color(207, 207, 196)).constrain {
+            x = 74.percent()
+            y = 92.percent()
+            width = ChildBasedMaxSizeConstraint() + 2.pixels()
+            height = ChildBasedMaxSizeConstraint() + 2.pixels()
+        }.onMouseClick {
+            whiteboard.drawArea.clear()
+        }.onMouseEnter {
+            // Change color on mouse hover
+            this.animate {
+                setColorAnimation(Animations.OUT_EXP, 0.5f, Color(120, 120, 100).toConstraint())
+            }
+        }.onMouseLeave {
+            // Change color back to original when not hovering
+            this.animate {
+                setColorAnimation(Animations.OUT_EXP, 0.5f, Color(207, 207, 196).toConstraint())
+            }
+        } childOf window
+
+        // Clear Whiteboard Label
+        UIText("Clear Whiteboard", shadow = false).constrain {
+            x = CenterConstraint()
+            y = CenterConstraint()
+            textScale = 0.5.pixels()
+            color = Color.BLACK.toConstraint()
+        } childOf clearButton
+
+        // For some reason escape doesn't close the GUI, perhaps one of the components is preventing the key propagation or holding on to window focus?
+        // Not sure, so here's a workaround
+        window.onKeyType { _, keyCode ->
+            if (keyCode == 1) toggle()
+        }
     }
 
     /**
      * Toggle the whiteboard by registering/unregistering the event
      */
-    fun toggle() {
+    public fun toggle() {
         // Unregister event if whiteboard is open to stop rendering
         if (open) {
             MinecraftForge.EVENT_BUS.unregister(whiteboardEvent)
@@ -114,15 +190,16 @@ class WhiteboardGUI : WindowScreen(ElementaVersion.V1) {
 
     /**
      * Enum class containing the various color-changing tools
+     *
      * @param color: Color - Color the tool should generate
      * @param fileName: String - Name of the tool's icon image, including the file extension
      */
-    enum class ColorTools(val color: Color, val fileName: String) {
-        BlackMarker(Color.BLACK,"BlackMarker.png"),
-        RedMarker(Color.RED,"RedMarker.png"),
-        GreenMarker(Color.GREEN,"GreenMarker.png"),
-        BlueMarker(Color.BLUE,"BlueMarker.png"),
-        Eraser(Color.WHITE,"DryEraser.png")
+    public enum class ColorTools(public val color: Color, public val fileName: String) {
+        BlackMarker(Color.BLACK, "BlackMarker.png"),
+        RedMarker(Color.RED, "RedMarker.png"),
+        GreenMarker(Color.GREEN, "GreenMarker.png"),
+        BlueMarker(Color.BLUE, "BlueMarker.png"),
+        Eraser(Color.WHITE, "DryEraser.png")
     }
 
 }

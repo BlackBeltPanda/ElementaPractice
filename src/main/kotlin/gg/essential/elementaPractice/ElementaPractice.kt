@@ -13,18 +13,18 @@ private const val ID = "elementapractice"
 private const val ADAPTER = "gg.essential.elementaPractice.adapter.KotlinLanguageAdapter"
 
 @Mod(name = NAME, modid = ID, version = VERSION, modLanguageAdapter = ADAPTER)
-class ElementaPractice {
+public class ElementaPractice {
 
     // Enable stencil and register the events on initialization
     @Mod.EventHandler
-    fun init(event: FMLInitializationEvent) {
+    public fun init(event: FMLInitializationEvent) {
         StencilEffect.enableStencil()
         MinecraftForge.EVENT_BUS.register(this)
     }
 
     // Register whiteboard command
     @Mod.EventHandler
-    fun init(event: FMLServerStartingEvent) {
+    public fun init(event: FMLServerStartingEvent) {
         event.registerServerCommand(WhiteboardCommand())
     }
 }

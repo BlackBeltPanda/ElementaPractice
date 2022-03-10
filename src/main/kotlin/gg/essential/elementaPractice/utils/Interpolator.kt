@@ -2,23 +2,25 @@ package gg.essential.elementaPractice.utils
 
 import gg.essential.elementaPractice.gui.components.Coordinates
 
-class Interpolator {
+public class Interpolator {
 
     /**
      * Interpolate the points, generating a smooth spline
-     * @param points: MutableList<Coordinates> - Coordinates (Pair<Number, Number>) to interpolate
-     * @return MutableList<Coordinates> - List of interpolated coordinates
+     *
+     * @param coords: MutableList<[Coordinates]> - Coordinates (Pair<Number, Number>) to interpolate
+     * @param segments: Int - The number of segments to create between points. More segments yields a smoother line
+     * @return MutableList<[Coordinates]> - List of interpolated coordinates
      */
-    fun interpolate(points: MutableList<Coordinates>): MutableList<Coordinates> {
-        val start = points[1]
-        val end = points[points.size - 2]
+    public fun interpolate(coords: MutableList<Coordinates>, segments: Int): MutableList<Coordinates> {
+        val start = coords[1]
+        val end = coords[coords.size - 2]
 
-        points.add(0, start)
-        points.add(end)
+        coords.add(0, start)
+        coords.add(end)
 
         val result = mutableListOf<Coordinates>()
-        for (i in 0 until points.size - 3) {
-            val intPoints = interpolate(points, i)
+        for (i in 0 until coords.size - 3) {
+            val intPoints = interpolate(coords, segments, i)
             if (result.size > 0) {
                 intPoints.removeAt(0)
             }
@@ -28,27 +30,26 @@ class Interpolator {
         return result
     }
 
-    private fun interpolate(points: MutableList<Coordinates>, index: Int): MutableList<Coordinates> {
+    private fun interpolate(coords: MutableList<Coordinates>, segments: Int, index: Int): MutableList<Coordinates> {
         val result = mutableListOf<Coordinates>()
         val x = Array(4) { Double.NaN }
         val y = Array(4) { Double.NaN }
         val time = Array(4) { Double.NaN }
         for (i in 0 until 4) {
-            x[i] = points[index + i].first.toDouble()
-            y[i] = points[index + i].second.toDouble()
+            x[i] = coords[index + i].first.toDouble()
+            y[i] = coords[index + i].second.toDouble()
             time[i] = i.toDouble()
         }
 
         val tstart = 1.0
         val tend = 2.0
-        val segments = 5
-        result.add(points[index + 1])
+        result.add(coords[index + 1])
         for (i in 1 until segments) {
             val xi = interpolate(x, time, tstart + (i * (tend - tstart)) / segments)
             val yi = interpolate(y, time, tstart + (i * (tend - tstart)) / segments)
             result.add(Coordinates(xi, yi))
         }
-        result.add(points[index + 2])
+        result.add(coords[index + 2])
         return result
     }
 

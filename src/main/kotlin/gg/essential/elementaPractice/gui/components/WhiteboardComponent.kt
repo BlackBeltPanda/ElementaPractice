@@ -5,7 +5,9 @@ import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.dsl.*
 import java.awt.Color
 
-class WhiteboardComponent : UIComponent() {
+public class WhiteboardComponent : UIComponent() {
+
+    public val drawArea: CanvasComponent
 
     init {
 
@@ -18,7 +20,7 @@ class WhiteboardComponent : UIComponent() {
             color = Color(100, 100, 100).toConstraint()
         } childOf this
 
-        val drawArea = SplineComponent().constrain {
+        drawArea = CanvasComponent().constrain {
             x = 3.pixels()
             y = 3.pixels()
             width = 100.percent() - 6.pixels()
@@ -28,15 +30,14 @@ class WhiteboardComponent : UIComponent() {
 
         drawArea.onMouseClick {
             // Generate a new line with color after clicking
-            drawArea.newLine(this@WhiteboardComponent.getColor())
+            drawArea.newLine()
         }.onMouseDrag { mouseX, mouseY, mouseButton ->
-            // Make sure the dragged point is within the draw area
+            // Only draw on left click
+            if (mouseButton != 0) return@onMouseDrag
+            // Make sure the dragged point is within the whiteboard area
             if (!isPointInside(mouseX + getLeft(), mouseY + getTop())) return@onMouseDrag
 
-            drawArea.addPoint(Pair(mouseX, mouseY))
-        }.onMouseRelease {
-            // Smooth (interpolate) the line after drawing
-            drawArea.interpolateLast()
+            drawArea.addPoint(Pair(mouseX + getLeft(), mouseY + getTop()))
         }
     }
 
