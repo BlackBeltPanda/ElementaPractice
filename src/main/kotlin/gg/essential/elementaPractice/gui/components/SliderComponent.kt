@@ -10,6 +10,7 @@ import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
+import gg.essential.elementa.state.BasicState
 import gg.essential.elementaPractice.WhiteboardPalette
 import kotlin.math.roundToInt
 
@@ -23,9 +24,11 @@ import kotlin.math.roundToInt
 public class SliderComponent constructor(
     private var label: String?,
     private var numValues: Int = 2,
-    private var currentValue: Int = 1,
+    private val currentValue: Int = 1,
     private var oneBased: Boolean = false
 ) : UIComponent() {
+
+    public val currentState: BasicState<Int> = BasicState(currentValue)
 
     init {
 
@@ -55,14 +58,14 @@ public class SliderComponent constructor(
 
         // Slider bar/knob
         val slider = UIBlock(WhiteboardPalette.SLIDER_BUTTON.toConstraint()).constrain {
-            x = (getSegmentPosition(currentValue - oneBased.toInt()) - 1).pixels()
+            x = (getSegmentPosition(currentState.get() - oneBased.toInt()) - 1).pixels()
             y = CenterConstraint()
             width = 3.pixels()
             height = 8.pixels()
         } childOf bar
 
         // Value indicator
-        val indicator = UIText(currentValue.toString()).constrain {
+        val indicator = UIText(currentState.get().toString()).constrain {
             x = 23.pixels()
             y = CenterConstraint()
             color = WhiteboardPalette.LABEL_TEXT.toConstraint()
@@ -81,16 +84,17 @@ public class SliderComponent constructor(
             // Round the x position to the nearest segment edge
             val segRounded = (relativeX / segWidth).roundToInt() * segWidth
 
-            slider.setX((segRounded - 1).pixels())
+            currentState.set( (segRounded / segWidth).roundToInt() + oneBased.toInt() )
+        }
 
-            // Set the current value to the index of the segment edge
-            currentValue = (segRounded / segWidth).roundToInt() + oneBased.toInt()
-
-            // Update indicator text
-            indicator.setText(currentValue.toString())
+        // Update the value indicator and slider position when the value state changes
+        currentState.onSetValue {
+            slider.setX( (getSegmentPosition(currentState.get() - oneBased.toInt()) - 1 ).pixels())
+            indicator.setText(it.toString())
         }
     }
 
+    // Get the x-coordinate where the slider should be given a value
     private fun getSegmentPosition(value: Int): Float {
         // Calculate the width of each segment between values
         val segWidth = 20f / (numValues - 1)
@@ -99,12 +103,5 @@ public class SliderComponent constructor(
 
     // Simple function to convert a boolean to an int
     private fun Boolean.toInt() = if (this) 1 else 0
-
-    /**
-     * Get the current value the slider is set to
-     *
-     * @return Int - The value the slider is set to, from 1 to numValues
-     */
-    public fun getValue(): Int = currentValue
 
 }

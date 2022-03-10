@@ -101,8 +101,8 @@ public class WhiteboardGUI : WindowScreen(ElementaVersion.V1) {
             x = 6.percent()
             y = 89.percent()
         } childOf window
-        sizeSlider.onMouseRelease {
-            whiteboard.drawArea.lineWidth = sizeSlider.getValue().toFloat()
+        sizeSlider.currentState.onSetValue {
+            whiteboard.drawArea.lineWidth = it.toFloat()
         }
 
         // Smoothing slider
@@ -110,8 +110,8 @@ public class WhiteboardGUI : WindowScreen(ElementaVersion.V1) {
             x = SiblingConstraint(padding = 5f)
             y = 89.percent()
         } childOf window
-        smoothingSlider.onMouseRelease {
-            whiteboard.drawArea.smoothing = smoothingSlider.getValue()
+        smoothingSlider.currentState.onSetValue {
+            whiteboard.drawArea.smoothing = it
         }
 
         // Clear Whiteboard button
