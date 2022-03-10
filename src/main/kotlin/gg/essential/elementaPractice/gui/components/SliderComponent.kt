@@ -4,11 +4,13 @@ import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.UIBlock
 import gg.essential.elementa.components.UIText
 import gg.essential.elementa.constraints.CenterConstraint
+import gg.essential.elementa.constraints.ChildBasedMaxSizeConstraint
+import gg.essential.elementa.constraints.ChildBasedSizeConstraint
 import gg.essential.elementa.dsl.childOf
 import gg.essential.elementa.dsl.constrain
 import gg.essential.elementa.dsl.pixels
 import gg.essential.elementa.dsl.toConstraint
-import java.awt.Color
+import gg.essential.elementaPractice.WhiteboardPalette
 import kotlin.math.roundToInt
 
 /**
@@ -19,6 +21,7 @@ import kotlin.math.roundToInt
  * @param oneBased: Boolean - True to start values at one, false to start values at zero
  */
 public class SliderComponent constructor(
+    private var label: String?,
     private var numValues: Int = 2,
     private var currentValue: Int = 1,
     private var oneBased: Boolean = false
@@ -28,38 +31,57 @@ public class SliderComponent constructor(
 
         if (numValues <= 1) throw IllegalArgumentException("numValues must be greater than one")
 
+        constrain {
+            width = ChildBasedMaxSizeConstraint()
+            height = ChildBasedSizeConstraint()
+        }
+
+        if (label?.isNotBlank() == true) {
+            UIText(label!!, false).constrain {
+                x = CenterConstraint()
+                y = 0.pixels()
+                textScale = 1.pixels()
+                color = WhiteboardPalette.LABEL_TEXT.toConstraint()
+            } childOf this
+        }
+
         // Background bar
-        val bar = UIBlock(Color(80, 80, 80).toConstraint()).constrain {
-            y = 2.pixels()
+        val bar = UIBlock(WhiteboardPalette.SLIDER_BACKGROUND.toConstraint()).constrain {
+            x = CenterConstraint()
+            y = if (label?.isNotBlank() == true) 11.pixels() else 2.pixels()
             width = 20.pixels()
             height = 4.pixels()
         } childOf this
 
         // Slider bar/knob
-        val slider = UIBlock(Color(150, 150, 150).toConstraint()).constrain {
-            x = (getSegmentPosition(currentValue - oneBased.toInt()) - 1.5).pixels()
+        val slider = UIBlock(WhiteboardPalette.SLIDER_BUTTON.toConstraint()).constrain {
+            x = (getSegmentPosition(currentValue - oneBased.toInt()) - 1).pixels()
+            y = CenterConstraint()
             width = 3.pixels()
             height = 8.pixels()
-        } childOf this
+        } childOf bar
 
         // Value indicator
         val indicator = UIText(currentValue.toString()).constrain {
             x = 23.pixels()
             y = CenterConstraint()
-            color = Color.WHITE.toConstraint()
-            textScale = 0.5.pixels()
+            color = WhiteboardPalette.LABEL_TEXT.toConstraint()
+            textScale = 1.pixels()
         } childOf bar
 
         onMouseDrag { mouseX, mouseY, mouseButton ->
             if (mouseButton != 0) return@onMouseDrag
-            if (mouseX !in 0f..bar.getWidth() || mouseY !in 0f..slider.getHeight()) return@onMouseDrag
+            val absoluteX = mouseX + getLeft()
+            val absoluteY = mouseY + getTop()
+            val relativeX = absoluteX - bar.getLeft()
+            if (absoluteX !in bar.getLeft()..bar.getRight() || absoluteY !in bar.getTop()..bar.getBottom()) return@onMouseDrag
 
             // Calculate the width of each segment between values
             val segWidth = bar.getWidth() / (numValues - 1)
             // Round the x position to the nearest segment edge
-            val segRounded = (mouseX / segWidth).roundToInt() * segWidth
+            val segRounded = (relativeX / segWidth).roundToInt() * segWidth
 
-            slider.setX((segRounded - 1.5).pixels())
+            slider.setX((segRounded - 1).pixels())
 
             // Set the current value to the index of the segment edge
             currentValue = (segRounded / segWidth).roundToInt() + oneBased.toInt()

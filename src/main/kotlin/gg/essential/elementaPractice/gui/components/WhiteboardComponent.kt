@@ -3,6 +3,7 @@ package gg.essential.elementaPractice.gui.components
 import gg.essential.elementa.UIComponent
 import gg.essential.elementa.components.UIRoundedRectangle
 import gg.essential.elementa.dsl.*
+import gg.essential.elementaPractice.WhiteboardPalette
 import java.awt.Color
 
 public class WhiteboardComponent : UIComponent() {
@@ -17,7 +18,7 @@ public class WhiteboardComponent : UIComponent() {
         val border = UIRoundedRectangle(8f).constrain {
             width = 100.percent()
             height = 100.percent()
-            color = Color(100, 100, 100).toConstraint()
+            color = WhiteboardPalette.WHITEBOARD_OUTLINE.toConstraint()
         } childOf this
 
         drawArea = CanvasComponent().constrain {
@@ -25,7 +26,7 @@ public class WhiteboardComponent : UIComponent() {
             y = 3.pixels()
             width = 100.percent() - 6.pixels()
             height = 100.percent() - 6.pixels()
-            color = Color.WHITE.toConstraint()
+            color = WhiteboardPalette.WHITEBOARD_BACKGROUND.toConstraint()
         } childOf border
 
         drawArea.onMouseClick {

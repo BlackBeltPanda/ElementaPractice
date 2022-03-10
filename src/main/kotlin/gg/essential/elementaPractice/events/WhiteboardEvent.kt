@@ -7,9 +7,11 @@ import net.minecraftforge.fml.common.gameevent.TickEvent
 
 public class WhiteboardEvent(private val whiteboard: WhiteboardGUI) {
 
-    // When main menu is pulled up, we need to display the GUI each tick, or it won't render properly
-    @SubscribeEvent
-    public fun tick(event: TickEvent.ClientTickEvent) {
-        UMinecraft.getMinecraft().displayGuiScreen(whiteboard)
+  // When main menu is pulled up, we need to display the GUI each tick, or it won't render properly
+  @SubscribeEvent
+  public fun tick(event: TickEvent.ClientTickEvent) {
+    if (event.phase == TickEvent.Phase.START) {
+      UMinecraft.getMinecraft().displayGuiScreen(whiteboard)
     }
+  }
 }

@@ -11,8 +11,7 @@ import kotlin.math.sqrt
 
 public class CanvasComponent : UIRoundedRectangle(8f) {
 
-    // TO-DO:
-    // Find a way to actually remove points from a line instead of just drawing over it with white
+    // TODO Find a way to actually remove points from a line instead of just drawing over it with white
 
     private val lines = mutableListOf<Line>()
     private var oldWidth: Float = 0f

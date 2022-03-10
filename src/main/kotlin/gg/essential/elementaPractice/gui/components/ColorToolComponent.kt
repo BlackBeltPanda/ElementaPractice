@@ -17,7 +17,7 @@ import javax.imageio.ImageIO
 public class ColorToolComponent constructor(
     private val colorTool: WhiteboardGUI.ColorTools
 ) : UIImage(CompletableFuture.supplyAsync {
-    ImageIO.read(this::class.java.getResourceAsStream("/assets/elementapractice/${colorTool.fileName}"))
+    ImageIO.read(this::class.java.getResourceAsStream(colorTool.resource))
 }) {
 
     public val outline: OutlineEffect =
@@ -33,8 +33,6 @@ public class ColorToolComponent constructor(
         }
 
         onMouseClick {
-            setWidth(32.pixels())
-            setHeight(ImageAspectConstraint())
             this effect outline
         }
 
