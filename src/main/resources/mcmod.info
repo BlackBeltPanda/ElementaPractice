@@ -1,14 +1,14 @@
 [
   {
-    "modid": "forgetemplate",
-    "name": "ForgeTemplate",
-    "description": "An example template",
+    "modid": "elementapractice",
+    "name": "ElementaPractice",
+    "description": "Elementa Practice Mod",
     "version": "${version}",
     "mcversion": "${mcversion}",
-    "url": "",
+    "url": "https://github.com/BlackBeltPanda/ElementaPractice",
     "updateUrl": "",
     "authorList": [
-      ""
+      "BlackBeltPanda"
     ],
     "credits": "",
     "logoFile": "",
